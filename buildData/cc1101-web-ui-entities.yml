@@ -1,0 +1,167 @@
+esphome:
+  name: radio-one-screen-ui-entities
+  friendly_name: radio-one-screen
+
+esp32:
+  board: esp32-s3-devkitm-1
+  framework:
+    type: esp-idf
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+  level: "VERY_VERBOSE"
+
+# The plain web_server just opens the built-in ESPHome entity dashboard;
+# numbers, switches and buttons defined below will appear there.
+web_server:
+  port: 80
+
+http_request:
+  timeout: 10s
+
+api:
+  encryption:
+    key: "p2obhT6rRONvQbplgWDmV37mfks9FCfHGCGZ6rfUTnI="
+
+ota:
+  - platform: esphome
+    password: "19838670f7007b7c66eda5d8f37baaf6"
+
+wifi:
+  ap:
+    ssid: "radio Fallback Hotspot"
+    password: "KUYycxw16BYR"
+
+captive_portal: {}
+
+time:
+  - platform: sntp
+    id: sntp_time
+
+spi:
+  clk_pin: 12
+  mosi_pin: 11
+  miso_pin: GPIO13
+
+cc1101:
+  cs_pin: GPIO10
+  frequency: 433.92MHz
+  rx_attenuation: 0dB
+  modulation_type: ASK/OOK
+
+remote_receiver:
+  pin: GPIO42
+  tolerance: 60%
+  filter: 100us
+  idle: 12ms
+  buffer_size: 10kb
+  dump:
+    - kaku
+  on_kaku:
+    then:
+      - lambda: |-
+          id(last_period) = x.period;
+          id(last_address) = x.address;
+          id(last_group) = x.group;
+          id(last_switch_type) = x.switchType;
+          id(last_unit) = x.unit;
+
+remote_transmitter:
+  pin: GPIO41
+  carrier_duty_percent: 50%
+  on_transmit:
+    then:
+          - cc1101.begin_tx
+  on_complete:
+    then:
+      - cc1101.begin_rx
+
+globals:
+  - id: last_period
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_address
+    type: unsigned long
+    restore_value: no
+    initial_value: '0'
+  - id: last_group
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: last_switch_type
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_unit
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+number:
+  - platform: template
+    name: "Kaku period"
+    id: kaku_period_number
+    optimistic: true
+    min_value: 0
+    max_value: 1000
+    step: 1
+  - platform: template
+    name: "Kaku switch type"
+    id: kaku_switch_type_number
+    optimistic: true
+    min_value: 0
+    max_value: 2
+    step: 1
+  - platform: template
+    name: "Kaku unit"
+    id: kaku_unit_number
+    optimistic: true
+    min_value: 0
+    max_value: 15
+    step: 1
+
+switch:
+  - platform: template
+    name: "Kaku group"
+    id: kaku_group_switch
+    optimistic: true
+
+button:
+  - platform: template
+    name: "Send Kaku"
+    on_press:
+      remote_transmitter.transmit_kaku:
+        period: !lambda 'return id(kaku_period_number).state;'
+        address: "0x0074834B"
+        group: !lambda 'return id(kaku_group_switch).state;'
+        switch_type: !lambda 'return id(kaku_switch_type_number).state;'
+        unit: !lambda 'return id(kaku_unit_number).state;'
+        dim_level_present: false
+        repeat:
+          times: 4
+          wait_time: 0ms
+  # - platform: template
+  #   name: "Paste last received"
+  #   on_press:
+  #     - lambda: |-
+  #         id(kaku_period) = id(last_period);
+  #         id(kaku_address) = id(last_address);
+  #         id(kaku_group) = id(last_group);
+  #         id(kaku_switch_type) = id(last_switch_type);
+  #         id(kaku_unit) = id(last_unit);
+  - platform: template
+    name: "Send Kaku  addr=0x0074834B group=0 type=0 unit=1 dimpresent=0 dim=0 period=256"
+    on_press:
+      remote_transmitter.transmit_kaku:
+        period: 256
+        address: "0x0074834B"
+        group: false
+        switch_type: 0
+        unit: 1
+        dim_level_present: false
+        repeat:
+          times: 4
+          wait_time: 0ms

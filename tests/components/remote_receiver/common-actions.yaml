@@ -98,6 +98,12 @@ on_nexa:
     - logger.log:
         format: "on_nexa: %lu %u %u %u %u"
         args: ["long(x.device)", "x.group", "x.state", "x.channel", "x.level"]
+
+on_kaku:
+  then:
+    - logger.log:
+        format: "on_kaku: %lu %u %u %u %u %u %u"
+        args: ["long(x.address)", "x.group", "x.switch_type", "x.unit", "x.dim_level_present", "x.dim_level", "x.period"]
 on_panasonic:
   then:
     - logger.log:

@@ -146,6 +146,17 @@ button:
       remote_transmitter.transmit_raw:
         code: !lambda |-
           return {(int32_t)id(test_number).state * 100, -1000};
+
+  - platform: template
+    name: Kaku example
+    on_press:
+      remote_transmitter.transmit_kaku:
+        period: 260
+        address: 0x123456
+        group: false
+        switch_type: 1
+        unit: 3
+        dim_level_present: false
   - platform: template
     name: AEHA
     id: eaha_hitachi_climate_power_on
