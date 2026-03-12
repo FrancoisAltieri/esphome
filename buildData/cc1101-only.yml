@@ -1,0 +1,77 @@
+
+esphome:
+  name: radio-one-screen
+  friendly_name: radio-one-screen
+
+esp32:
+  board: esp32-s3-devkitm-1
+  framework:
+    type: esp-idf
+psram:
+  mode: octal
+  speed: 80MHz
+# Enable logging
+logger:
+  level: "DEBUG"
+#enable web debugging
+web_server:
+  port: 80
+http_request:
+  timeout: 10s  
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "p2obhT6rRONvQbplgWDmV37mfks9FCfHGCGZ6rfUTnI="
+
+ota:
+  - platform: esphome
+    password: "19838670f7007b7c66eda5d8f37baaf6"
+
+wifi:
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "radio Fallback Hotspot"
+    password: "KUYycxw16BYR"
+
+captive_portal:
+
+time:
+  - platform: sntp
+    id: sntp_time
+
+spi:
+  clk_pin: 12
+  mosi_pin: 11
+  miso_pin: GPIO13
+cc1101:
+  cs_pin: GPIO10
+  frequency: 433.92MHz
+  rx_attenuation: 0dB
+  modulation_type: ASK/OOK
+
+remote_receiver:
+  # This MUST be the pin connected to CC1101 GDO2
+  pin: GPIO42
+  # We use the same settings we found earlier for your sensor
+  tolerance: 60%
+  filter: 100us
+  idle: 12ms
+  buffer_size: 10kb
+  dump:
+    - kaku
+
+remote_transmitter:
+  pin: GPIO41
+  carrier_duty_percent: 50%
+
+button:
+  - platform: template
+    name: Kaku example
+    on_press:
+      remote_transmitter.transmit_kaku:
+        period: 260
+        address: 0x0074834B
+        group: false
+        switch_type: 0
+        unit: 1
+        dim_level_present: false

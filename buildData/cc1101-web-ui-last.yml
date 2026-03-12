@@ -1,0 +1,151 @@
+esphome:
+  name: radio-one-screen-ui-last
+  friendly_name: radio-one-screen
+
+esp32:
+  board: esp32-s3-devkitm-1
+  framework:
+    type: esp-idf
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+  level: "DEBUG"
+
+web_server:
+  port: 80
+  widgets:
+    - name: "Period"
+      type: number
+      id: period_input
+      min_value: 0
+      max_value: 1000
+      step: 1
+    - name: "Address"
+      type: text
+      id: address_input
+      placeholder: "0x123456"
+    - name: "Group"
+      type: bool
+      id: group_input
+    - name: "Switch type"
+      type: number
+      id: switch_type_input
+      min_value: 0
+      max_value: 2
+      step: 1
+    - name: "Unit"
+      type: number
+      id: unit_input
+      min_value: 0
+      max_value: 15
+      step: 1
+    - name: "Send Kaku"
+      type: button
+      icon: mdi:send
+      on_click:
+        - remote_transmitter.transmit_kaku:
+            period: !lambda 'return id(period_input).state;'
+            address: !lambda 'return strtol(id(address_input).state.c_str(), nullptr, 0);'
+            group: !lambda 'return id(group_input).state;'
+            switch_type: !lambda 'return id(switch_type_input).state;'
+            unit: !lambda 'return id(unit_input).state;'
+            dim_level_present: false
+    - name: "Paste last received"
+      type: button
+      icon: mdi:content-paste
+      on_click:
+        - lambda: |-
+            // copy the last dumped values into the widgets
+            id(period_input).publish_state(id(last_period));
+            char buf[32];
+            snprintf(buf, sizeof(buf), "0x%06lX", id(last_address));
+            id(address_input).publish_state(std::string(buf));
+            id(group_input).publish_state(id(last_group));
+            id(switch_type_input).publish_state(id(last_switch_type));
+            id(unit_input).publish_state(id(last_unit));
+
+http_request:
+  timeout: 10s
+
+api:
+  encryption:
+    key: "p2obhT6rRONvQbplgWDmV37mfks9FCfHGCGZ6rfUTnI="
+
+ota:
+  - platform: esphome
+    password: "19838670f7007b7c66eda5d8f37baaf6"
+
+wifi:
+  ap:
+    ssid: "radio Fallback Hotspot"
+    password: "KUYycxw16BYR"
+
+captive_portal: {}
+
+time:
+  - platform: sntp
+    id: sntp_time
+
+spi:
+  clk_pin: 12
+  mosi_pin: 11
+  miso_pin: GPIO13
+
+cc1101:
+  cs_pin: GPIO10
+  frequency: 433.92MHz
+  rx_attenuation: 0dB
+  modulation_type: ASK/OOK
+
+remote_receiver:
+  pin: GPIO42
+  tolerance: 60%
+  filter: 100us
+  idle: 12ms
+  buffer_size: 10kb
+  dump:
+    - kaku
+  on_kaku:
+    then:
+      - lambda: |-
+          // update globals and widgets when a Kaku frame is dumped
+          id(last_period) = x.period;
+          id(last_address) = x.address;
+          id(last_group) = x.group;
+          id(last_switch_type) = x.switchType;
+          id(last_unit) = x.unit;
+          id(period_input).publish_state(x.period);
+          char buf[32];
+          snprintf(buf, sizeof(buf), "0x%06lX", x.address);
+          id(address_input).publish_state(std::string(buf));
+          id(group_input).publish_state(x.group);
+          id(switch_type_input).publish_state(x.switchType);
+          id(unit_input).publish_state(x.unit);
+
+remote_transmitter:
+  pin: GPIO41
+  carrier_duty_percent: 50%
+
+globals:
+  - id: last_period
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_address
+    type: unsigned long
+    restore_value: no
+    initial_value: '0'
+  - id: last_group
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: last_switch_type
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_unit
+    type: int
+    restore_value: no
+    initial_value: '0'
