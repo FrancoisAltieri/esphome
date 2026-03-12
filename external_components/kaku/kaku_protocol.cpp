@@ -29,6 +29,9 @@ static void send_dim_pattern(RemoteTransmitData *dst, uint32_t period) {
 // Encode implementation ------------------------------------------------------------------
 
 void KakuProtocol::encode(RemoteTransmitData *dst, const KakuData &data) {
+    ESP_LOGI(TAG, "KakuProtocol::encode: addr=0x%08lX group=%d type=%d unit=%d dimpresent=%d dim=%d period=%u", 
+           data.address, data.group ? 1 : 0, data.switchType, data.unit, data.dimLevelPresent ? 1 : 0,
+           data.dimLevel, data.period);
   uint32_t period = data.period == 0 ? 260u : data.period;
   dst->set_carrier_frequency(0);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "remote_base.h"
+#include "esphome/components/remote_base/remote_base.h"
 
 #include <cinttypes>
 
