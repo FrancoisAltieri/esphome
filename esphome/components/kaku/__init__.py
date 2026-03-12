@@ -5,12 +5,13 @@ from esphome.components import remote_base
 from esphome.const import (
     CONF_ADDRESS,
     CONF_PERIOD,
-    CONF_SWITCH_TYPE,
-    CONF_DIM_LEVEL_PRESENT,
-    CONF_DIM_LEVEL,
-    CONF_UNIT,
     CONF_GROUP,
 )
+
+CONF_SWITCH_TYPE = "switch_type"
+CONF_DIM_LEVEL_PRESENT = "dim_level_present"
+CONF_DIM_LEVEL = "dim_level"
+CONF_UNIT = "unit"
 
 AUTO_LOAD = ["remote_base"]
 
