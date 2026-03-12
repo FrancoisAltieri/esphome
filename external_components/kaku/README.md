@@ -1,6 +1,6 @@
 # KAKU Protocol External Component
 
-This is an external component for ESPHome that provides support for the KAKU (Kambrook) remote control protocol.
+This is an external component for ESPHome that provides support for the KAKU remote control protocol.
 
 ## Installation
 
@@ -30,6 +30,8 @@ external_components:
 ### Remote Receiver
 
 ```yaml
+kaku: 
+  # empty component, forces loading new protocol to remote_base
 remote_receiver:
   pin: GPIO14
   
@@ -45,6 +47,8 @@ remote_receiver:
 ### Remote Transmitter
 
 ```yaml
+kaku: 
+  # empty component, forces loading new protocol to remote_base
 remote_transmitter:
   pin: GPIO32
   carrier_duty_percent: 50
