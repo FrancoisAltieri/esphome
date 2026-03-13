@@ -1,6 +1,7 @@
 # KAKU Protocol External Component
 
 This is an external component for ESPHome that provides support for the KAKU remote control protocol.
+Algorithm based on https://github.com/1technophile/NewRemoteSwitch from 1technophile.  
 
 ## Installation
 
@@ -20,7 +21,7 @@ Or, if you have this component in a Git repository:
 external_components:
   - source:
       type: git
-      url: https://github.com/your-username/your-repo
+      url: https://github.com/FrancoisAltieri/esphome
       ref: main
     components: [kaku]
 ```
@@ -40,7 +41,7 @@ remote_receiver:
       name: "Bedroom Light"
       address: 0x123456
       group: false
-      switch_type: 0  # 0=off, 1=on
+      switch_type: 0  # 0=off, 1=on, 2=dimming
       unit: 0
 ```
 
