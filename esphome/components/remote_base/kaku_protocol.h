@@ -1,5 +1,8 @@
 #pragma once
-
+/***
+ * This is the support for the KAKU remote control protocol. 
+ * Algorithm based on https://github.com/1technophile/NewRemoteSwitch from 1technophile.
+ */
 #include "remote_base.h"
 
 #include <cinttypes>
