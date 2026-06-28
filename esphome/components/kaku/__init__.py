@@ -66,22 +66,10 @@ def kaku_dumper(var, config):
 
 @remote_base.register_action("kaku", KakuAction, KAKU_SCHEMA)
 async def kaku_action(var, config, args):
-    cg.add(var.set_period(await cg.templatable(config[CONF_PERIOD], args, cg.uint32)))
+    cg.add(var.set_period(await cg.templatable(config[CONF_PERIOD], args, cg.uint_)))
     cg.add(var.set_address(await cg.templatable(config[CONF_ADDRESS], args, cg.uint32)))
     cg.add(var.set_group(await cg.templatable(config[CONF_GROUP], args, cg.bool_)))
-    cg.add(
-        var.set_switch_type(
-            await cg.templatable(
-                cg.RawExpression(f"(esphome::remote_base::KakuData::SwitchType){config[CONF_SWITCH_TYPE]}"),
-                args,
-                cg.RawExpression("esphome::remote_base::KakuData::SwitchType")
-            )
-        )
-    )
+    cg.add(var.set_switch_type(await cg.templatable(config[CONF_SWITCH_TYPE], args, cg.uint8)))
     cg.add(var.set_unit(await cg.templatable(config[CONF_UNIT], args, cg.uint8)))
-    cg.add(
-        var.set_dim_level_present(
-            await cg.templatable(config[CONF_DIM_LEVEL_PRESENT], args, cg.bool_)
-        )
-    )
+    cg.add(var.set_dim_level_present(await cg.templatable(config[CONF_DIM_LEVEL_PRESENT], args, cg.bool_)))
     cg.add(var.set_dim_level(await cg.templatable(config[CONF_DIM_LEVEL], args, cg.uint8)))
