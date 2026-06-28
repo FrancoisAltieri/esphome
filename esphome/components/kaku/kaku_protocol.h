@@ -17,8 +17,10 @@ struct KakuData {
   uint8_t dimLevel;             // 4-bit dim level
 
   bool operator==(const KakuData &rhs) const {
-    return period == rhs.period && address == rhs.address && group == rhs.group && switchType == rhs.switchType &&
-           unit == rhs.unit && dimLevelPresent == rhs.dimLevelPresent && dimLevel == rhs.dimLevel;
+  return address == rhs.address &&
+         group == rhs.group &&
+         switchType == rhs.switchType &&
+         unit == rhs.unit;
   }
 };
 
